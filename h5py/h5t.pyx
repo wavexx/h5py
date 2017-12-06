@@ -1400,6 +1400,15 @@ cdef TypeStringID _c_string(dtype dt):
     tid = H5Tcopy(H5T_C_S1)
     H5Tset_size(tid, dt.itemsize)
     H5Tset_strpad(tid, H5T_STR_NULLPAD)
+
+    enc = dt.metadata.get('encoding', 'ascii').lower()
+    if enc == 'ascii':
+        pass
+    elif enc == 'utf8':
+        H5Tset_cset(tid, H5T_CSET_UTF8)
+    else:
+        raise TypeError('Unsupported encoding in fixed-length string')
+
     return TypeStringID(tid)
 
 cdef TypeCompoundID _c_complex(dtype dt):
